@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package generated;
+
+option go_package = "internal/generated";
+
+service Graph {
+    rpc Add(AddGraphRequest) returns (AddGraphResponse);
+}
+
+message AddGraphRequest {
+    string name = 1;
+    uint32 vertices_count = 2;
+    repeated uint32 degrees = 3;
+    repeated uint32 weights = 4;
+}
+
+message AddGraphResponse {
+    string graph_id = 1;
+}
