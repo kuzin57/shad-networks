@@ -28,7 +28,7 @@ func NewNeo4jDriver(lc fx.Lifecycle, log *zap.Logger, config *config.Config) *Ne
 }
 
 func (d *Neo4jDriver) Start(ctx context.Context) error {
-	dbUri := fmt.Sprintf("neo4j://localhost:%d", d.conf.Port)
+	dbUri := fmt.Sprintf("neo4j://db:%d", d.conf.Port)
 
 	d.log.Info("creating new driver...")
 

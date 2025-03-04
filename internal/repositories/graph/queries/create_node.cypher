@@ -1,1 +1,1 @@
-CREATE (n:Node {graphID: $graphID, number: $number}) RETURN n
+CREATE (n:Node { graphID: $graphID, number: $number }) RETURN n

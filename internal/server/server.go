@@ -24,8 +24,8 @@ func NewServer(graphService GraphService) *Server {
 }
 
 func (s *Server) Add(ctx context.Context, request *generated.AddGraphRequest) (*generated.AddGraphResponse, error) {
+
 	req := entities.GraphParams{
-		Name:          request.Name,
 		VerticesCount: request.VerticesCount,
 		Weights:       request.Weights,
 		Degrees:       request.Degrees,

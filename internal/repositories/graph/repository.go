@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/kuzin57/shad-networks/internal/config"
-	"github.com/kuzin57/shad-networks/internal/consts"
 	"github.com/kuzin57/shad-networks/internal/entities"
 	"github.com/kuzin57/shad-networks/internal/repositories"
 	"github.com/kuzin57/shad-networks/internal/repositories/graph/queries"
@@ -28,21 +27,25 @@ func NewRepository(driver *repositories.Neo4jDriver, log *zap.Logger, conf *conf
 }
 
 func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) error {
-	driver := r.driver.DB()
+	var (
+		driver  = r.driver.DB()
+		session = driver.NewSession(ctx, neo4j.SessionConfig{
+			AccessMode: neo4j.AccessModeWrite,
+		})
+	)
+
+	defer func() {
+		_ = session.Close(ctx)
+	}()
 
 	for i := range graph.AdjencyMaxtrix {
 		r.log.Sugar().Infof("creating node#%d", i)
 
-		_, err := neo4j.ExecuteQuery(
+		_, err := session.ExecuteWrite(
 			ctx,
-			driver,
-			queries.CreateNode,
-			map[string]any{
-				"graphID": graph.ID,
-				"number":  i,
+			func(tx neo4j.ManagedTransaction) (any, error) {
+				return r.createNode(ctx, tx, &graph, i)
 			},
-			neo4j.EagerResultTransformer,
-			neo4j.ExecuteQueryWithDatabase(consts.DatabaseName),
 		)
 		if err != nil {
 			return fmt.Errorf("add new node: %w", err)
@@ -57,12 +60,14 @@ func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) erro
 				continue
 			}
 
-			if err := r.createEdge(ctx, i, j, &graph); err != nil {
-				return fmt.Errorf("add new edge: %w", err)
-			}
-
-			if err := r.createEdge(ctx, j, i, &graph); err != nil {
-				return fmt.Errorf("add new edge: %w", err)
+			_, err := session.ExecuteWrite(
+				ctx,
+				func(tx neo4j.ManagedTransaction) (any, error) {
+					return r.createEdge(ctx, tx, i, j, &graph)
+				},
+			)
+			if err != nil {
+				return fmt.Errorf("creating edge from %d to %d: %w", i, j, err)
 			}
 		}
 	}
@@ -70,19 +75,58 @@ func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) erro
 	return nil
 }
 
-func (r *Repository) createEdge(ctx context.Context, i, j int, graph *entities.Graph) error {
-	_, err := neo4j.ExecuteQuery(
+func (r *Repository) createNode(
+	ctx context.Context,
+	tx neo4j.ManagedTransaction,
+	graph *entities.Graph,
+	nodeNumber int,
+) (any, error) {
+	records, err := tx.Run(
 		ctx,
-		r.driver.DB(),
+		queries.CreateNode,
+		map[string]any{
+			"graphID": graph.ID,
+			"number":  nodeNumber,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("create node: %w", err)
+	}
+
+	_, err = records.Single(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("got single record: %w", err)
+	}
+
+	return nil, nil
+}
+
+func (r *Repository) createEdge(
+	ctx context.Context,
+	tx neo4j.ManagedTransaction,
+	startNode,
+	endNode int,
+	graph *entities.Graph,
+) (any, error) {
+	records, err := tx.Run(
+		ctx,
 		queries.CreateEdge,
 		map[string]any{
-			"firstNumber":  i,
-			"secondNumber": j,
+			"firstNumber":  startNode,
+			"secondNumber": endNode,
 			"graphID":      graph.ID,
-			"weight":       graph.AdjencyMaxtrix[i][j],
+			"weight":       graph.AdjencyMaxtrix[startNode][endNode],
+			"connection":   "CONNECTED_TO",
 		},
-		neo4j.EagerResultTransformer,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("create edge: %w", err)
+	}
 
-	return err
+	_, err = records.Single(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("got single record: %w", err)
+	}
+
+	return nil, nil
 }

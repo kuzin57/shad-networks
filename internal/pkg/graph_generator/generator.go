@@ -28,7 +28,7 @@ func (g *Generator) Generate(params entities.GraphParams) entities.Graph {
 
 	slices.Sort(params.Degrees)
 
-	g.log.Info("generating graph", zap.String("name", params.Name), zap.Int("vertices count", int(params.VerticesCount)))
+	g.log.Info("generating graph", zap.Int("vertices count", int(params.VerticesCount)))
 
 	maxDegree := int(params.Degrees[len(params.Degrees)-1])
 

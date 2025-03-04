@@ -9,10 +9,9 @@ service Graph {
 }
 
 message AddGraphRequest {
-    string name = 1;
-    uint32 vertices_count = 2;
-    repeated uint32 degrees = 3;
-    repeated uint32 weights = 4;
+    uint32 vertices_count = 1;
+    repeated uint32 degrees = 2;
+    repeated uint32 weights = 3;
 }
 
 message AddGraphResponse {
