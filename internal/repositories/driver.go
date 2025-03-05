@@ -46,6 +46,6 @@ func (d *Neo4jDriver) Stop(ctx context.Context) error {
 	return d.db.Close(ctx)
 }
 
-func (d *Neo4jDriver) DB() neo4j.DriverWithContext {
-	return d.db
+func (d *Neo4jDriver) NewSession(ctx context.Context, config neo4j.SessionConfig) Session {
+	return d.db.NewSession(ctx, config)
 }

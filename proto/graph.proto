@@ -4,8 +4,12 @@ package generated;
 
 option go_package = "internal/generated";
 
+import "google/protobuf/duration.proto"; 
+
 service Graph {
     rpc Add(AddGraphRequest) returns (AddGraphResponse);
+    rpc Get(GetGraphRequest) returns (GetGraphResponse);
+    rpc FindPath(FindPathRequest) returns (FindPathResponse);
 }
 
 message AddGraphRequest {
@@ -16,4 +20,23 @@ message AddGraphRequest {
 
 message AddGraphResponse {
     string graph_id = 1;
+}
+
+message GetGraphRequest {
+    string graph_id = 1;
+}
+
+message GetGraphResponse {
+    bytes b64_image = 1;
+}
+
+message FindPathRequest {
+    string graph_id = 1;
+    uint32 from = 2;
+    uint32 to = 3;
+}
+
+message FindPathResponse {
+    bytes b64_image = 1;
+    google.protobuf.Duration duration = 2;
 }

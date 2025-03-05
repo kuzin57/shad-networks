@@ -1,21 +1,18 @@
-package repository
+package graph
 
 import (
-	"github.com/kuzin57/shad-networks/internal/config"
 	"github.com/kuzin57/shad-networks/internal/repositories"
 	"go.uber.org/zap"
 )
 
 type Repository struct {
 	log    *zap.Logger
-	driver Driver
-	conf   *config.DBConfig
+	driver repositories.Driver
 }
 
-func NewRepository(driver *repositories.Neo4jDriver, log *zap.Logger, conf *config.Config) *Repository {
+func NewRepository(driver repositories.Driver, log *zap.Logger) *Repository {
 	return &Repository{
-		driver: driver.DB(),
-		conf:   conf.DB,
+		driver: driver,
 		log:    log,
 	}
 }

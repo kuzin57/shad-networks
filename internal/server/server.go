@@ -24,7 +24,6 @@ func NewServer(graphService GraphService) *Server {
 }
 
 func (s *Server) Add(ctx context.Context, request *generated.AddGraphRequest) (*generated.AddGraphResponse, error) {
-
 	req := entities.GraphParams{
 		VerticesCount: request.VerticesCount,
 		Weights:       request.Weights,
@@ -39,4 +38,12 @@ func (s *Server) Add(ctx context.Context, request *generated.AddGraphRequest) (*
 	return &generated.AddGraphResponse{
 		GraphId: graph.ID,
 	}, nil
+}
+
+func (s *Server) Get(ctx context.Context, request *generated.GetGraphRequest) (*generated.GetGraphResponse, error) {
+	return nil, nil
+}
+
+func (s *Server) FindPath(ctx context.Context, request *generated.FindPathRequest) (*generated.FindPathResponse, error) {
+	return nil, nil
 }

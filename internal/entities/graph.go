@@ -6,13 +6,16 @@ type Graph struct {
 }
 
 type GraphNode struct {
-	GraphID string
-	Number  int
+	GraphID string `json:"graphID"`
+	Number  int    `json:"number"`
 }
 
 type GraphEdge struct {
-	StartNode int
-	EndNode   int
+	From       int    `json:"from"`
+	To         int    `json:"to"`
+	GraphID    string `json:"graphID"`
+	Weight     int    `json:"weight"`
+	Connection string `json:"connection"`
 }
 
 type GraphParams struct {

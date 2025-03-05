@@ -39,7 +39,7 @@ func Create(confPath string) fx.Option {
 			server.NewServer,
 			fx.Annotate(graph.NewService, fx.As(new(server.GraphService))),
 			fx.Annotate(graphgenerator.NewGenerator, fx.As(new(graph.GraphGenerator))),
-			repositories.NewNeo4jDriver,
+			fx.Annotate(repositories.NewNeo4jDriver, fx.As(new(repositories.Driver))),
 			fx.Annotate(graphrepo.NewRepository, fx.As(new(graph.GraphRepository))),
 			zap.NewProduction,
 		),

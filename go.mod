@@ -6,6 +6,7 @@ require github.com/neo4j/neo4j-go-driver/v5 v5.27.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.0 // indirect
 	github.com/neo4j/neo4j-go-driver v1.8.3 // indirect
@@ -13,6 +14,7 @@ require (
 	github.com/stretchr/testify v1.10.0 // indirect
 	go.uber.org/dig v1.18.0 // indirect
 	go.uber.org/fx v1.23.0 // indirect
+	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/net v0.35.0 // indirect

@@ -33,3 +33,11 @@ func (s *Service) AddGraph(ctx context.Context, params entities.GraphParams) (en
 
 	return graph, nil
 }
+
+func (s *Service) GetGraph(ctx context.Context, graphID string) (entities.Graph, error) {
+	return entities.Graph{}, nil
+}
+
+func (s *Service) FindPath(ctx context.Context, graphID string, from, to int) (entities.Graph, []int, error) {
+	return entities.Graph{}, nil, nil
+}
