@@ -10,7 +10,9 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/kuzin57/shad-networks/internal/config"
 	"github.com/kuzin57/shad-networks/internal/generated"
+	graphcleaner "github.com/kuzin57/shad-networks/internal/pkg/graph_cleaner"
 	graphgenerator "github.com/kuzin57/shad-networks/internal/pkg/graph_generator"
+	"github.com/kuzin57/shad-networks/internal/pkg/visualizer"
 	"github.com/kuzin57/shad-networks/internal/repositories"
 	graphrepo "github.com/kuzin57/shad-networks/internal/repositories/graph"
 	"github.com/kuzin57/shad-networks/internal/server"
@@ -36,12 +38,14 @@ func Create(confPath string) fx.Option {
 		}),
 		fx.Provide(
 			NewGRPCServer,
+			zap.NewProduction,
 			server.NewServer,
 			fx.Annotate(graph.NewService, fx.As(new(server.GraphService))),
 			fx.Annotate(graphgenerator.NewGenerator, fx.As(new(graph.GraphGenerator))),
 			fx.Annotate(repositories.NewNeo4jDriver, fx.As(new(repositories.Driver))),
-			fx.Annotate(graphrepo.NewRepository, fx.As(new(graph.GraphRepository))),
-			zap.NewProduction,
+			fx.Annotate(graphrepo.NewRepository, fx.As(new(graph.GraphRepository)), fx.As(new(graphcleaner.GraphRepository))),
+			graphcleaner.NewCleaner,
+			fx.Annotate(visualizer.NewVisualizer, fx.As(new(server.Visualizer))),
 		),
 		fx.Invoke(func(server *grpc.Server) {}),
 	)

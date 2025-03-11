@@ -1,8 +1,8 @@
 package entities
 
 type Graph struct {
-	ID             string
-	AdjencyMaxtrix [][]int
+	ID             string    `json:"graphID"`
+	AdjencyMaxtrix [][][]int `json:"-"`
 }
 
 type GraphNode struct {
@@ -16,6 +16,13 @@ type GraphEdge struct {
 	GraphID    string `json:"graphID"`
 	Weight     int    `json:"weight"`
 	Connection string `json:"connection"`
+}
+
+type Path []PathPart
+
+type PathPart struct {
+	Vertex int
+	Weight int // weight of edge which comes to this vertex
 }
 
 type GraphParams struct {

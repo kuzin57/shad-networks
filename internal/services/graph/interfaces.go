@@ -11,5 +11,9 @@ type GraphGenerator interface {
 }
 
 type GraphRepository interface {
-	CreateGraph(context.Context, entities.Graph) error
+	CreateGraph(ctx context.Context, graph entities.Graph) error
+	DropGraph(ctx context.Context, graphID string) error
+	GetGraph(ctx context.Context, graphID string) (entities.Graph, error)
+	ProjectIfNotExists(ctx context.Context, graphID string) error
+	FindPath(ctx context.Context, graphID string, source, target int) (entities.Path, error)
 }

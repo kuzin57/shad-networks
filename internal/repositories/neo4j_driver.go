@@ -10,6 +10,10 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	_ Driver = (*Neo4jDriver)(nil)
+)
+
 type Neo4jDriver struct {
 	conf *config.DBConfig
 	log  *zap.Logger
@@ -48,4 +52,8 @@ func (d *Neo4jDriver) Stop(ctx context.Context) error {
 
 func (d *Neo4jDriver) NewSession(ctx context.Context, config neo4j.SessionConfig) Session {
 	return d.db.NewSession(ctx, config)
+}
+
+func (d *Neo4jDriver) Get() neo4j.DriverWithContext {
+	return d.db
 }

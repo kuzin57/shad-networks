@@ -44,25 +44,37 @@ func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) erro
 
 	for i := range graph.AdjencyMaxtrix {
 		for j := i + 1; j < len(graph.AdjencyMaxtrix); j++ {
-			if graph.AdjencyMaxtrix[i][j] == 0 {
+			if len(graph.AdjencyMaxtrix[i][j]) == 0 {
 				continue
 			}
 
-			graphEdge.From = i
-			graphEdge.To = j
-			graphEdge.Weight = graph.AdjencyMaxtrix[i][j]
+			for _, edgeWeight := range graph.AdjencyMaxtrix[i][j] {
+				graphEdge.From = i
+				graphEdge.To = j
+				graphEdge.Weight = edgeWeight
 
-			_, err := session.ExecuteWrite(
-				ctx,
-				func(tx neo4j.ManagedTransaction) (any, error) {
-					return r.createEdge(ctx, tx, graphEdge)
-				},
-			)
-			if err != nil {
-				return fmt.Errorf("creating edge from %d to %d: %w", i, j, err)
+				_, err := session.ExecuteWrite(
+					ctx,
+					func(tx neo4j.ManagedTransaction) (any, error) {
+						return r.createEdge(ctx, tx, graphEdge)
+					},
+				)
+				if err != nil {
+					return fmt.Errorf("creating edge from %d to %d: %w", i, j, err)
+				}
 			}
 		}
 	}
+
+	r.log.Info("success fully created edges")
+
+	if _, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		return r.projectGraph(ctx, tx, graph.ID)
+	}); err != nil {
+		return err
+	}
+
+	r.log.Info("successfully created graph")
 
 	return nil
 }

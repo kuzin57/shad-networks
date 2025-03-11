@@ -8,6 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	maxRetries = 50
+)
+
 type Generator struct {
 	log *zap.Logger
 }
@@ -21,9 +25,9 @@ func NewGenerator(log *zap.Logger) *Generator {
 }
 
 func (g *Generator) Generate(params entities.GraphParams) entities.Graph {
-	adjMatrix := make([][]int, 0, params.VerticesCount)
+	adjMatrix := make([][][]int, 0, params.VerticesCount)
 	for range params.VerticesCount {
-		adjMatrix = append(adjMatrix, make([]int, params.VerticesCount))
+		adjMatrix = append(adjMatrix, make([][]int, params.VerticesCount))
 	}
 
 	slices.Sort(params.Degrees)
@@ -40,16 +44,19 @@ func (g *Generator) Generate(params entities.GraphParams) entities.Graph {
 
 		newDeg := g.chooseDeg(params.Degrees, deg)
 
-		for deg < newDeg {
+		for retry := 0; deg < newDeg && retry < maxRetries; {
 			neighbor := rand.Intn(len(adjMatrix))
 
-			if adjMatrix[i][neighbor] > 0 {
+			if len(adjMatrix[i][neighbor]) > 0 {
+				retry++
+
 				continue
 			}
 
 			weightInd := rand.Intn(len(params.Weights))
-			adjMatrix[i][neighbor] = int(params.Weights[weightInd])
-			adjMatrix[neighbor][i] = int(params.Weights[weightInd])
+			adjMatrix[i][neighbor] = []int{int(params.Weights[weightInd])}
+			adjMatrix[neighbor][i] = []int{int(params.Weights[weightInd])}
+			retry = 0
 
 			deg++
 		}
@@ -62,13 +69,11 @@ func (g *Generator) Generate(params entities.GraphParams) entities.Graph {
 	}
 }
 
-func (g *Generator) countDeg(adjMatrix [][]int, vertex int) int {
+func (g *Generator) countDeg(adjMatrix [][][]int, vertex int) int {
 	var cnt int
 
-	for _, weight := range adjMatrix[vertex] {
-		if weight > 0 {
-			cnt++
-		}
+	for _, weights := range adjMatrix[vertex] {
+		cnt += len(weights)
 	}
 
 	return cnt

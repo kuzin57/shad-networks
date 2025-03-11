@@ -61,6 +61,9 @@ func (s *createGraphTestSuite) TestSuccessPath() {
 			ExecuteWrite(ctx, gomock.Any()).
 			Return(nil, nil),
 		s.session.EXPECT().
+			ExecuteWrite(ctx, gomock.Any()).
+			Return(nil, nil),
+		s.session.EXPECT().
 			Close(ctx).
 			Return(nil),
 	)

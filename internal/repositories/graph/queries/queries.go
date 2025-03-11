@@ -14,9 +14,18 @@ var (
 	//go:embed create_node.cypher
 	CreateNode string
 
-	//go:embed get_nodes.cypher
-	GetNodes string
+	//go:embed get_nodes_with_rels.cypher
+	GetNodesWithRels string
 
-	//go:embed find_nearest_by_djikstra.cypher
-	FindNearestByDjikstra string
+	//go:embed find_nearest_between_two_dijkstra.cypher
+	FindNearestBetweenTwoDijkstra string
+
+	//go:embed project_graph.cypher
+	ProjectGraph string
+
+	//go:embed check_graph_exists.cypher
+	CheckGraphExists string
+
+	//go:embed drop_graph.cypher
+	DropGraph string
 )

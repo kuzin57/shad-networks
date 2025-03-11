@@ -15,9 +15,10 @@ var (
 type Server struct {
 	generated.UnimplementedGraphServer
 	graphService GraphService
+	visualizer   Visualizer
 }
 
-func NewServer(graphService GraphService) *Server {
+func NewServer(graphService GraphService, visualizer Visualizer) *Server {
 	return &Server{
 		graphService: graphService,
 	}
@@ -41,9 +42,33 @@ func (s *Server) Add(ctx context.Context, request *generated.AddGraphRequest) (*
 }
 
 func (s *Server) Get(ctx context.Context, request *generated.GetGraphRequest) (*generated.GetGraphResponse, error) {
-	return nil, nil
+	graph, err := s.graphService.GetGraph(ctx, request.GraphId)
+	if err != nil {
+		return nil, fmt.Errorf("get graph: %w", err)
+	}
+
+	b64Image, err := s.visualizer.Visualize(ctx, graph, nil)
+	if err != nil {
+		return nil, fmt.Errorf("visualize image: %w", err)
+	}
+
+	return &generated.GetGraphResponse{
+		B64Image: b64Image,
+	}, nil
 }
 
 func (s *Server) FindPath(ctx context.Context, request *generated.FindPathRequest) (*generated.FindPathResponse, error) {
-	return nil, nil
+	graph, path, err := s.graphService.FindPath(ctx, request.GraphId, int(request.From), int(request.To))
+	if err != nil {
+		return nil, fmt.Errorf("find path: %w", err)
+	}
+
+	b64Image, err := s.visualizer.Visualize(ctx, graph, path)
+	if err != nil {
+		return nil, fmt.Errorf("visualize image: %w", err)
+	}
+
+	return &generated.FindPathResponse{
+		B64Image: b64Image,
+	}, nil
 }

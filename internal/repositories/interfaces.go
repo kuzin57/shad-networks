@@ -10,6 +10,7 @@ import (
 
 type Driver interface {
 	NewSession(ctx context.Context, config neo4j.SessionConfig) Session
+	Get() neo4j.DriverWithContext
 }
 
 type Session interface {

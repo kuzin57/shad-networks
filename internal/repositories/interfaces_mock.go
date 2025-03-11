@@ -41,6 +41,20 @@ func (m *MockDriver) EXPECT() *MockDriverMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockDriver) Get() neo4j.DriverWithContext {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get")
+	ret0, _ := ret[0].(neo4j.DriverWithContext)
+	return ret0
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockDriverMockRecorder) Get() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockDriver)(nil).Get))
+}
+
 // NewSession mocks base method.
 func (m *MockDriver) NewSession(ctx context.Context, config neo4j.SessionConfig) Session {
 	m.ctrl.T.Helper()
