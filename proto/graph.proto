@@ -10,6 +10,7 @@ service Graph {
     rpc Add(AddGraphRequest) returns (AddGraphResponse);
     rpc Get(GetGraphRequest) returns (GetGraphResponse);
     rpc FindPath(FindPathRequest) returns (FindPathResponse);
+    rpc Scroll(ScrollRequest) returns(ScrollResponse);
 }
 
 message AddGraphRequest {
@@ -28,6 +29,7 @@ message GetGraphRequest {
 
 message GetGraphResponse {
     bytes b64_image = 1;
+    string scroll_id = 2;
 }
 
 message FindPathRequest {
@@ -39,4 +41,14 @@ message FindPathRequest {
 message FindPathResponse {
     bytes b64_image = 1;
     google.protobuf.Duration duration = 2;
+}
+
+message ScrollRequest {
+    string scroll_id = 1;
+}
+
+message ScrollResponse {
+    bool is_over = 1;
+    string scroll_id = 2;
+    bytes b64_image = 3;
 }

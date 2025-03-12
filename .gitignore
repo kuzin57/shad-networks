@@ -1,1 +1,5 @@
 *.pb.go
+.env
+secrets.yaml
+redisdata
+pgdata

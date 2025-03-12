@@ -1,8 +1,0 @@
-app:
-  port: 8080
-
-db:
-  port: 7687
-  user: neo4j
-  password: shad-networks
-  database: neo4j

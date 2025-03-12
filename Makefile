@@ -1,17 +1,20 @@
 gen:
-	protoc -I proto proto/graph.proto --go_out=internal/generated --go_opt=paths=source_relative --go-grpc_out=internal/generated --go-grpc_opt=paths=source_relative
+	protoc -I proto proto/*.proto --go_out=./generated --go_opt=paths=source_relative --go-grpc_out=./generated --go-grpc_opt=paths=source_relative
 
 clean:
-	rm ./internal/generated/*.pb.go && rm ./main
+	rm -f ./generated/*.pb.go
+	rm -f ./main
 
 install:
-	go get -d ./...
+	go get ./...
 
-test:
-	go test -v ./...
+test-%:
+	go test -v ./services/$*/...
 
-build:
-	go build ./cmd/main
+build-%:
+	go build ./services/$*/cmd/main
 
-run:
-	./main --config ./config/config.yaml
+run-%:
+	./main --config ./services/$*/config/config.yaml --secrets ./services/$*/config/secrets.yaml
+
+.PHONY: graph

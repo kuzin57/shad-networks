@@ -1,0 +1,11 @@
+app:
+  port: 8080
+
+neo4j:
+  port: 7687
+
+redis:
+  port: 6379
+
+postgres:
+  port: 5432
