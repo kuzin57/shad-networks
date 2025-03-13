@@ -32,7 +32,8 @@ type PathPart struct {
 }
 
 type GraphParams struct {
-	VerticesCount uint32
-	Degrees       []uint32
-	Weights       []uint32
+	VerticesCount    uint32
+	Degrees          []uint32
+	Weights          []uint32
+	MaxMultipleEdges uint32
 }

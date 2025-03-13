@@ -17,6 +17,7 @@ message AddGraphRequest {
     uint32 vertices_count = 1;
     repeated uint32 degrees = 2;
     repeated uint32 weights = 3;
+    uint32 max_multiple_edges = 4;
 }
 
 message AddGraphResponse {
@@ -40,7 +41,8 @@ message FindPathRequest {
 
 message FindPathResponse {
     bytes b64_image = 1;
-    google.protobuf.Duration duration = 2;
+    string scroll_id = 2;
+    google.protobuf.Duration duration = 3;
 }
 
 message ScrollRequest {

@@ -27,9 +27,10 @@ func NewServer(graphService GraphService, log *zap.Logger) *Server {
 
 func (s *Server) Add(ctx context.Context, request *generated.AddGraphRequest) (*generated.AddGraphResponse, error) {
 	req := entities.GraphParams{
-		VerticesCount: request.VerticesCount,
-		Weights:       request.Weights,
-		Degrees:       request.Degrees,
+		VerticesCount:    request.VerticesCount,
+		Weights:          request.Weights,
+		Degrees:          request.Degrees,
+		MaxMultipleEdges: request.MaxMultipleEdges,
 	}
 
 	graph, err := s.graphService.AddGraph(ctx, req)
@@ -59,7 +60,7 @@ func (s *Server) Get(ctx context.Context, request *generated.GetGraphRequest) (*
 }
 
 func (s *Server) FindPath(ctx context.Context, request *generated.FindPathRequest) (*generated.FindPathResponse, error) {
-	_, _, b64Image, err := s.graphService.FindPath(ctx, request.GraphId, int(request.From), int(request.To))
+	_, _, imageChunk, err := s.graphService.FindPath(ctx, request.GraphId, int(request.From), int(request.To))
 	if err != nil {
 		s.log.Error("find path failed", zap.Error(err))
 
@@ -67,7 +68,8 @@ func (s *Server) FindPath(ctx context.Context, request *generated.FindPathReques
 	}
 
 	return &generated.FindPathResponse{
-		B64Image: b64Image,
+		B64Image: imageChunk.Content,
+		ScrollId: imageChunk.ScrollID,
 	}, nil
 }
 

@@ -23,7 +23,7 @@ func (r *Repository) DropGraph(ctx context.Context, graphID string) error {
 		},
 	)
 	if err != nil {
-		return fmt.Errorf("add new node: %w", err)
+		return fmt.Errorf("execute write: %w", err)
 	}
 
 	return nil
@@ -38,7 +38,7 @@ func (r *Repository) dropGraph(ctx context.Context, tx neo4j.ManagedTransaction,
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("project graph: %w", err)
+		return nil, fmt.Errorf("drop graph: %w", err)
 	}
 
 	return nil, nil

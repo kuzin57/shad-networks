@@ -3,9 +3,11 @@ package graph
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/kuzin57/shad-networks/services/graph/internal/entities"
 	"github.com/kuzin57/shad-networks/services/graph/internal/repositories/graph/queries"
+	"github.com/kuzin57/shad-networks/services/graph/internal/utils/convert"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
@@ -34,26 +36,28 @@ func (r *Repository) FindPath(ctx context.Context, graphID string, source, targe
 		return nil, fmt.Errorf("nil record")
 	}
 
-	path, ok := record.Get(pathParam)
+	pathValue, ok := record.Get(pathParam)
 	if !ok {
 		return nil, fmt.Errorf("path param not found")
 	}
 
-	costs, ok := record.Get(costsParam)
+	costsValue, ok := record.Get(costsParam)
 	if !ok {
 		return nil, fmt.Errorf("costs param not found")
 	}
 
+	r.log.Sugar().Infof("pathValue: %s", reflect.TypeOf(pathValue).String())
+
 	var (
-		pathValue, _  = path.([]float64)
-		costsValue, _ = costs.([]float64)
-		resultPath    = make(entities.Path, 0, len(pathValue))
+		path, _    = pathValue.([]any)
+		costs, _   = costsValue.([]any)
+		resultPath = make(entities.Path, 0, len(path))
 	)
 
-	for i := range pathValue {
+	for i := range path {
 		if i == 0 {
 			resultPath = append(resultPath, entities.PathPart{
-				Vertex: int(pathValue[i]),
+				Vertex: convert.FloatAnyToInt(path[i]),
 				Weight: 0},
 			)
 
@@ -61,10 +65,12 @@ func (r *Repository) FindPath(ctx context.Context, graphID string, source, targe
 		}
 
 		resultPath = append(resultPath, entities.PathPart{
-			Vertex: int(pathValue[i]),
-			Weight: int(costsValue[i]) - int(costsValue[i-1]),
+			Vertex: convert.FloatAnyToInt(path[i]),
+			Weight: convert.FloatAnyToInt(costs[i]) - convert.FloatAnyToInt(costs[i-1]),
 		})
 	}
+
+	r.log.Sugar().Infof("found path: %v", resultPath)
 
 	return resultPath, nil
 }

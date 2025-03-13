@@ -11,6 +11,13 @@ import (
 	"github.com/kuzin57/shad-networks/services/graph/internal/entities"
 )
 
+const (
+	defaultPathEdgeWidth     = 5
+	defaultPathLabelFontSize = 20
+	defaultPathEdgeColor     = "red"
+	defaultPathVertexColor   = "blue"
+)
+
 type Visualizer struct{}
 
 func NewVisualizer() *Visualizer {
@@ -49,9 +56,14 @@ func (v *Visualizer) Visualize(ctx context.Context, graph entities.Graph, path e
 				}
 
 				edge.SetLabel(fmt.Sprint(weight))
+				edge.SetDir(cgraph.NoneDir)
 
 				if v.checkEdgeInPath(i, j, weight, path) {
-					edge.SetColor("red")
+					edge.SetPenWidth(defaultPathEdgeWidth)
+					edge.SetColor(defaultPathEdgeColor)
+					edge.SetLabelFontColor(defaultPathEdgeColor)
+					edge.SetLabelFontSize(defaultPathLabelFontSize)
+					nodes[i].SetFillColor(defaultPathVertexColor)
 				}
 			}
 		}
@@ -73,6 +85,10 @@ func (v *Visualizer) getEdgeName(source, target, index int) string {
 func (v *Visualizer) checkEdgeInPath(source, target, weight int, path []entities.PathPart) bool {
 	for i := 1; i < len(path); i++ {
 		if path[i-1].Vertex == source && path[i].Vertex == target && path[i].Weight == weight {
+			return true
+		}
+
+		if path[i-1].Vertex == target && path[i].Vertex == source && path[i].Weight == weight {
 			return true
 		}
 	}

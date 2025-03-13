@@ -1,3 +1,3 @@
-CALL gds.graph.exists(graphName: String) YIELD
-graphName: String,
-exists: Boolean
+CALL gds.graph.exists($graphID) YIELD
+graphName,
+exists

@@ -14,7 +14,7 @@ func (r *Repository) ProjectIfNotExists(ctx context.Context, graphID string) err
 		r.driver.Unwrap(),
 		queries.CheckGraphExists,
 		map[string]any{
-			nameParam: graphID,
+			idParam: graphID,
 		},
 		neo4j.EagerResultTransformer,
 	)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/kuzin57/shad-networks/services/graph/internal/repositories"
 	"github.com/redis/go-redis/v9"
@@ -41,6 +42,8 @@ func NewCacheRepository(
 }
 
 func (r *CacheRepository) Start(ctx context.Context) error {
+	r.log.Info("starting cache...")
+
 	r.pubsub = r.driver.Unwrap().PSubscribe(ctx, expirationEvent)
 
 	go r.Run(ctx)
@@ -55,15 +58,22 @@ func (r *CacheRepository) Stop(ctx context.Context) error {
 }
 
 func (r *CacheRepository) Run(ctx context.Context) {
+	r.log.Info("listening for messages...")
+
 	for {
-		select {
-		case <-r.done:
-			return
-		case message := <-r.pubsub.Channel():
-			r.log.Sugar().Infof("received message: %s", message.String())
-			// if err := c.repo.DropGraph(ctx, graphID); err != nil {
-			// 	c.log.Error("drop graph", zap.Error(err))
-			// }
+		message, err := r.pubsub.ReceiveMessage(ctx)
+		if err != nil {
+			r.log.Error("received error", zap.Error(err))
+
+			break
+		}
+
+		if strings.HasPrefix(message.Payload, defaultGraphIDKeyPrefix) {
+			r.log.Sugar().Infof("key expired: %s", message.Payload)
+
+			if err := r.processor.DropGraph(ctx, strings.TrimPrefix(message.Payload, defaultGraphIDKeyPrefix)); err != nil {
+				r.log.Error("drop graph", zap.Error(err))
+			}
 		}
 	}
 }
