@@ -12,7 +12,8 @@ type AppConfig struct {
 }
 
 type Neo4jConfig struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 type RedisConfig struct {

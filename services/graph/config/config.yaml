@@ -2,6 +2,7 @@ app:
   port: 8080
 
 neo4j:
+  host: 94.131.112.151
   port: 7687
 
 redis:

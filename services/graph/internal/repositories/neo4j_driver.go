@@ -42,7 +42,7 @@ func NewNeo4jDriver(
 }
 
 func (d *Neo4jDriver) Start(ctx context.Context) error {
-	dbUri := fmt.Sprintf("neo4j://neo4j:%d", d.conf.Port)
+	dbUri := fmt.Sprintf("neo4j://%s:%d", d.conf.Host, d.conf.Port)
 
 	d.log.Info("creating new driver...")
 
