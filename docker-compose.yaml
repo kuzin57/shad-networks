@@ -83,10 +83,8 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - neo4j
       - postgres
       - redis
 volumes:
-  neo4j_data:
   pg_data:
     driver: local
