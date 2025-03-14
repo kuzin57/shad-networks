@@ -13,3 +13,5 @@ services:
       - host.docker.internal:host-gateway
     volumes:
       - neo4j_data:/data
+volumes:
+  neo4j_data:
