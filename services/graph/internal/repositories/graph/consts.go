@@ -9,6 +9,7 @@ const (
 	weightParam = "weight"
 	pathParam   = "path"
 	costsParam  = "costs"
+	kParam      = "k"
 )
 
 const (

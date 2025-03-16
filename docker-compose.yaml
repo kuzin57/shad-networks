@@ -74,6 +74,21 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    networks:
+      - kafka-network
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+    networks:
+      - kafka-network
   graph:
     build: 
       context: ./
@@ -85,6 +100,8 @@ services:
     depends_on:
       - postgres
       - redis
+      - kafka
+      - zookeeper
 volumes:
   pg_data:
     driver: local

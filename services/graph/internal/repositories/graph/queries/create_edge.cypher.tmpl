@@ -1,0 +1,3 @@
+MATCH (firstNode:Node {graphID: $graphID, number: $from}), (secondNode:Node {graphID: $graphID, number: $to})
+CREATE (firstNode)-[:{{.Connection}} {weight: $weight, number: $number}]->(secondNode)
+RETURN firstNode, secondNode

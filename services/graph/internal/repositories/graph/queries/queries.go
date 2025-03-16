@@ -8,8 +8,8 @@ var (
 	//go:embed create_database.cypher
 	CreateDatabase string
 
-	//go:embed create_edge.cypher
-	CreateEdge string
+	//go:embed create_edge.cypher.tmpl
+	CreateEdgeTemplate string
 
 	//go:embed create_node.cypher
 	CreateNode string
@@ -17,8 +17,11 @@ var (
 	//go:embed get_nodes_with_rels.cypher
 	GetNodesWithRels string
 
-	//go:embed find_nearest_between_two_dijkstra.cypher
-	FindNearestBetweenTwoDijkstra string
+	//go:embed find_nearest_dijkstra.cypher
+	FindNearestDijkstra string
+
+	//go:embed find_k_nearest_yens.cypher
+	FindKNearestYens string
 
 	//go:embed project_graph.cypher
 	ProjectGraph string

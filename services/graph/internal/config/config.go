@@ -5,6 +5,7 @@ type Config struct {
 	Neo4j    *Neo4jConfig    `yaml:"neo4j"`
 	Redis    *RedisConfig    `yaml:"redis"`
 	Postgres *PostgresConfig `yaml:"postgres"`
+	Kafka    *KafkaConfig    `yaml:"kafka"`
 }
 
 type AppConfig struct {
@@ -17,9 +18,22 @@ type Neo4jConfig struct {
 }
 
 type RedisConfig struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 type PostgresConfig struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+}
+
+type KafkaConfig struct {
+	Host   string             `yaml:"host"`
+	Port   int                `yaml:"port"`
+	Topics []KafkaTopicConfig `yaml:"topics"`
+}
+
+type KafkaTopicConfig struct {
+	Topic      string `yaml:"topic"`
+	Partitions int32  `yaml:"partitions"`
 }

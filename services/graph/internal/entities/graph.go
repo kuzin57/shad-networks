@@ -15,6 +15,7 @@ type GraphEdge struct {
 	To         int    `json:"to"`
 	GraphID    string `json:"graphID"`
 	Weight     int    `json:"weight"`
+	Number     int    `json:"number"`
 	Connection string `json:"connection"`
 }
 

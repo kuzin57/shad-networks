@@ -6,7 +6,16 @@ neo4j:
   port: 7687
 
 redis:
+  host: redis
   port: 6379
 
 postgres:
+  host: postgres
   port: 5432
+
+kafka:
+  host: kafka
+  port: 9092
+  topics:
+    - topic: path_processing
+      partitions: 1

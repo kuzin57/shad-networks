@@ -60,7 +60,13 @@ func (s *Server) Get(ctx context.Context, request *generated.GetGraphRequest) (*
 }
 
 func (s *Server) FindPath(ctx context.Context, request *generated.FindPathRequest) (*generated.FindPathResponse, error) {
-	_, _, imageChunk, err := s.graphService.FindPath(ctx, request.GraphId, int(request.From), int(request.To))
+	_, _, imageChunk, err := s.graphService.FindPaths(
+		ctx,
+		request.GraphId,
+		int(request.From),
+		int(request.To),
+		1,
+	)
 	if err != nil {
 		s.log.Error("find path failed", zap.Error(err))
 
@@ -85,5 +91,25 @@ func (s *Server) Scroll(ctx context.Context, request *generated.ScrollRequest) (
 		ScrollId: request.ScrollId,
 		IsOver:   isOver,
 		B64Image: chunk,
+	}, nil
+}
+
+func (s *Server) FindPaths(ctx context.Context, request *generated.FindPathsRequest) (*generated.FindPathsResponse, error) {
+	_, _, imageChunk, err := s.graphService.FindPaths(
+		ctx,
+		request.GraphId,
+		int(request.From),
+		int(request.To),
+		int(request.Amount),
+	)
+	if err != nil {
+		s.log.Error("find path failed", zap.Error(err))
+
+		return nil, err
+	}
+
+	return &generated.FindPathsResponse{
+		B64Image: imageChunk.Content,
+		ScrollId: imageChunk.ScrollID,
 	}, nil
 }

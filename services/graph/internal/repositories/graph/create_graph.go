@@ -42,6 +42,7 @@ func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) erro
 
 	r.log.Info("successfully created nodes")
 
+	var edgeNumber int
 	for i := range graph.AdjencyMaxtrix {
 		for j := i + 1; j < len(graph.AdjencyMaxtrix); j++ {
 			if len(graph.AdjencyMaxtrix[i][j]) == 0 {
@@ -52,16 +53,19 @@ func (r *Repository) CreateGraph(ctx context.Context, graph entities.Graph) erro
 				graphEdge.From = i
 				graphEdge.To = j
 				graphEdge.Weight = edgeWeight
+				graphEdge.Number = edgeNumber
 
 				_, err := session.ExecuteWrite(
 					ctx,
 					func(tx neo4j.ManagedTransaction) (any, error) {
-						return r.createEdge(ctx, tx, graphEdge)
+						return r.СreateEdge(ctx, tx, graphEdge)
 					},
 				)
 				if err != nil {
 					return fmt.Errorf("creating edge from %d to %d: %w", i, j, err)
 				}
+
+				edgeNumber++
 			}
 		}
 	}
@@ -91,28 +95,6 @@ func (r *Repository) createNode(
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create node: %w", err)
-	}
-
-	_, err = records.Single(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("got single record: %w", err)
-	}
-
-	return nil, nil
-}
-
-func (r *Repository) createEdge(
-	ctx context.Context,
-	tx neo4j.ManagedTransaction,
-	edge *entities.GraphEdge,
-) (any, error) {
-	records, err := tx.Run(
-		ctx,
-		queries.CreateEdge,
-		jsonutils.Serialize(edge),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("create edge: %w", err)
 	}
 
 	_, err = records.Single(ctx)

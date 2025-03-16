@@ -10,8 +10,8 @@ import (
 func main() {
 	var confPath, secretsPath string
 
-	flag.StringVar(&confPath, "config", "./config/config.yaml", "path to config")
-	flag.StringVar(&secretsPath, "secrets", "./config/secrets.yaml", "path to secrets")
+	flag.StringVar(&confPath, "config", "../../config/config.yaml", "path to config")
+	flag.StringVar(&secretsPath, "secrets", "../../config/secrets.yaml", "path to secrets")
 
 	flag.Parse()
 

@@ -54,6 +54,8 @@ func (s *Service) GetGraph(ctx context.Context, graphID string) (entities.Graph,
 		return entities.Graph{}, nil, "", fmt.Errorf("get graph: %w", err)
 	}
 
+	s.log.Info("got graph, starting visualizing...")
+
 	b64Image, err := s.visualizer.Visualize(ctx, graph, nil)
 	if err != nil {
 		s.log.Error("graph vizualization failed", zap.Error(err))
@@ -71,14 +73,24 @@ func (s *Service) GetGraph(ctx context.Context, graphID string) (entities.Graph,
 	return graph, firstChunk, scrollID, nil
 }
 
-func (s *Service) FindPath(
+func (s *Service) ScrollGraphImage(ctx context.Context, scrollID string) ([]byte, bool, error) {
+	chunk, isOver, err := s.cache.GetFileChunk(ctx, scrollID)
+	if err != nil {
+		return nil, false, fmt.Errorf("get file chunk: %w", err)
+	}
+
+	return chunk, isOver, nil
+}
+
+func (s *Service) FindPaths(
 	ctx context.Context,
 	graphID string,
 	source,
-	target int,
+	target,
+	amount int,
 ) (
 	entities.Graph,
-	entities.Path,
+	[]entities.Path,
 	ImageChunk,
 	error,
 ) {
@@ -101,12 +113,12 @@ func (s *Service) FindPath(
 		return entities.Graph{}, nil, ImageChunk{}, fmt.Errorf("get graph: %w", err)
 	}
 
-	path, err := s.repo.FindPath(ctx, graphID, source, target)
+	paths, err := s.repo.FindPaths(ctx, graphID, source, target, amount)
 	if err != nil {
-		return entities.Graph{}, nil, ImageChunk{}, fmt.Errorf("find path: %w", err)
+		return entities.Graph{}, nil, ImageChunk{}, fmt.Errorf("find paths: %w", err)
 	}
 
-	b64Image, err := s.visualizer.Visualize(ctx, graph, path)
+	b64Image, err := s.visualizer.Visualize(ctx, graph, paths)
 	if err != nil {
 		s.log.Error("graph vizualization failed", zap.Error(err))
 
@@ -120,14 +132,5 @@ func (s *Service) FindPath(
 		return entities.Graph{}, nil, ImageChunk{}, fmt.Errorf("put file data: %w", err)
 	}
 
-	return graph, path, ImageChunk{Content: firstChunk, ScrollID: scrollID}, nil
-}
-
-func (s *Service) ScrollGraphImage(ctx context.Context, scrollID string) ([]byte, bool, error) {
-	chunk, isOver, err := s.cache.GetFileChunk(ctx, scrollID)
-	if err != nil {
-		return nil, false, fmt.Errorf("get file chunk: %w", err)
-	}
-
-	return chunk, isOver, nil
+	return graph, paths, ImageChunk{Content: firstChunk, ScrollID: scrollID}, nil
 }

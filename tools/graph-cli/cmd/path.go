@@ -16,6 +16,7 @@ var pathFlags struct {
 	file    string
 	source  int
 	target  int
+	amount  int
 }
 
 var pathCmd = &cobra.Command{
@@ -24,7 +25,7 @@ var pathCmd = &cobra.Command{
 	Long: `find shortest path in a graph between <source> and <target> vertices.
 			Returns an image of the path. Filename for image should be provided`,
 	RunE: func(cmd *cobra.Command, _ []string) error {
-		return findPath(cmd.Context())
+		return findPaths(cmd.Context())
 	},
 }
 
@@ -35,18 +36,20 @@ func init() {
 	pathCmd.PersistentFlags().StringVarP(&pathFlags.file, "file", "f", "", "file to save an image")
 	pathCmd.PersistentFlags().IntVarP(&pathFlags.source, "source", "s", 0, "source vertex")
 	pathCmd.PersistentFlags().IntVarP(&pathFlags.target, "target", "t", 0, "target vertex")
+	pathCmd.PersistentFlags().IntVarP(&pathFlags.amount, "amount", "a", 1, "amount of paths")
 }
 
-func findPath(ctx context.Context) error {
+func findPaths(ctx context.Context) error {
 	client, err := getClient()
 	if err != nil {
 		return fmt.Errorf("get client: %w", err)
 	}
 
-	graphResponse, err := client.FindPath(ctx, &generated.FindPathRequest{
+	graphResponse, err := client.FindPaths(ctx, &generated.FindPathsRequest{
 		GraphId: pathFlags.graphID,
 		From:    uint32(pathFlags.source),
 		To:      uint32(pathFlags.target),
+		Amount:  uint32(pathFlags.amount),
 	})
 	if err != nil {
 		return fmt.Errorf("get graph error: %w", err)

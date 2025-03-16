@@ -58,15 +58,17 @@ func (r *CacheRepository) Stop(ctx context.Context) error {
 }
 
 func (r *CacheRepository) Run(ctx context.Context) {
-	r.log.Info("listening for messages...")
-
 	for {
+		r.log.Info("listening for messages...")
+
 		message, err := r.pubsub.ReceiveMessage(ctx)
 		if err != nil {
 			r.log.Error("received error", zap.Error(err))
 
 			break
 		}
+
+		r.log.Sugar().Infof("message payload: %s, %s", message.Pattern, message.Payload)
 
 		if strings.HasPrefix(message.Payload, defaultGraphIDKeyPrefix) {
 			r.log.Sugar().Infof("key expired: %s", message.Payload)

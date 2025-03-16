@@ -16,6 +16,7 @@ type GraphRepository interface {
 	GetGraph(ctx context.Context, graphID string) (entities.Graph, error)
 	ProjectIfNotExists(ctx context.Context, graphID string) error
 	FindPath(ctx context.Context, graphID string, source, target int) (entities.Path, error)
+	FindPaths(ctx context.Context, graphID string, source, target, amount int) ([]entities.Path, error)
 }
 
 type GraphCache interface {
@@ -26,5 +27,5 @@ type GraphCache interface {
 }
 
 type Visualizer interface {
-	Visualize(ctx context.Context, graph entities.Graph, path entities.Path) ([]byte, error)
+	Visualize(ctx context.Context, graph entities.Graph, paths []entities.Path) ([]byte, error)
 }

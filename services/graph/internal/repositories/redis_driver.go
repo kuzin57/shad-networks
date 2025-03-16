@@ -35,7 +35,7 @@ func NewRedisDriver(
 
 func (d *RedisDriver) Start(ctx context.Context) error {
 	d.client = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("redis:%d", d.conf.Port),
+		Addr:     fmt.Sprintf("%s:%d", d.conf.Host, d.conf.Port),
 		Username: d.secret.User,
 		Password: d.secret.Password,
 	})
