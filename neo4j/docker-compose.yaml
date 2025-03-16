@@ -9,10 +9,9 @@ services:
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH}
       NEO4J_PLUGINS: '["graph-data-science"]'
-      NEO4J_cypher_forbid_shortestpath_common_nodes: false
     extra_hosts:
       - host.docker.internal:host-gateway
     volumes:
-      - neo4j_data:/data
-volumes:
-  neo4j_data:
+      - $HOME/neo4j/data:/data
+      - $HOME/neo4j/logs:/logs
+      - $HOME/neo4j/conf:/var/lib/neo4j/conf
